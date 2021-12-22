@@ -1,0 +1,139 @@
+//
+//  RestaurantsViewController.swift
+//  ATProject
+//
+//  Created by Jeffrey Haley on 12/15/21.
+//
+
+import MapKit
+
+class RestaurantsViewController: UIViewController {
+    let viewModel: RestaurantsViewModel
+    let locationManager = CLLocationManager()
+    var rootView: RestaurantsBaseView { view as! RestaurantsBaseView }
+
+    init(viewModel: RestaurantsViewModel = DefaultRestaurantsViewModel()) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func loadView() {
+        super.loadView()
+        let view = RestaurantsBaseView()
+        view.tableView.dataSource = self
+        view.tableView.delegate = self
+        view.tableView.register(RestaurantTableViewCell.self, forCellReuseIdentifier: "RestaurantTableViewCell")
+        view.mapView.delegate = self
+        view.searchHeaderView.searchBarTextField.delegate = self
+        self.view = view
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        locationManager.delegate = self
+        handleLocationAuthorization(status: locationManager.authorizationStatus)
+    }
+    
+    func handleLocationAuthorization(status: CLAuthorizationStatus) {
+        switch status {
+        case .notDetermined:
+            locationManager.requestWhenInUseAuthorization()
+
+        case .authorizedAlways, .authorizedWhenInUse:
+            getRestaurantsViewContent(with: nil)
+
+        case .denied, .restricted:
+            print("")
+            // TODO: show alert to turn on location in settings
+            
+        @unknown default:
+            return
+        }
+    }
+    
+    func getRestaurantsViewContent(with query: String?) {
+        let activityIndicator = UIActivityIndicatorView(style: .large)
+        activityIndicator.center = rootView.center
+        activityIndicator.startAnimating()
+        view.addSubview(activityIndicator)
+        
+        viewModel.getRestaurantsViewContent(query: query) { [weak self] result in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                activityIndicator.stopAnimating()
+                switch result {
+                case .success:
+                    self.rootView.tableView.reloadData()
+                    self.rootView.mapView.populate(with: self.viewModel.mapViewContent)
+
+                case let .failure(error):
+                    // TODO: display error message accordingly
+                    print(error.localizedDescription)
+                }
+            }
+        }
+    }
+}
+
+extension RestaurantsViewController: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+//        let selectedRestaurant = viewModel.restaurantsViewContent.cellContent[indexPath.row]
+//        guard let annotation = selectedRestaurant.annotation else { return }
+//        mapView.mapView.selectAnnotation(annotation, animated: true)
+//        didTapMapButton()
+    }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        viewModel.listViewContent.cellsContent.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "RestaurantTableViewCell") as? RestaurantTableViewCell else {
+            return UITableViewCell()
+        }
+
+        cell.restaurantInfoView.populate(with: viewModel.listViewContent.cellsContent[indexPath.row])
+        cell.restaurantInfoView.delegate = self
+        return cell
+    }
+}
+
+extension RestaurantsViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        getRestaurantsViewContent(with: textField.text)
+        return true
+    }
+}
+
+extension RestaurantsViewController: RestaurantInfoViewDelegate {
+    func didTapHeartImage(isFavorited: Bool, placeID: String) {
+        // TODO: extract if else into viewModel?
+        if isFavorited {
+            viewModel.saveFavoritedRestaurant(id: placeID)
+        } else {
+            viewModel.removeFavoritedRestaurant(id: placeID)
+        }
+    }
+}
+
+extension RestaurantsViewController: MKMapViewDelegate {
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+//        guard let coordinate = view.annotation?.coordinate,
+//              let content = viewModel.getSelectedRestaurantContent(with: coordinate) else { return }
+//        self.mapView.selectedRestaurantInfoView.populate(with: content)
+//        self.mapView.selectedRestaurantInfoView.isHidden = false
+    }
+}
+
+extension RestaurantsViewController: CLLocationManagerDelegate {
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        handleLocationAuthorization(status: manager.authorizationStatus)
+    }
+}
