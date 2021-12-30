@@ -23,6 +23,13 @@
 		45E91030276C06EA0068E98C /* SearchHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E9102F276C06EA0068E98C /* SearchHeaderView.swift */; };
 		45E9104027714B6D0068E98C /* UIFont+ATProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E9103F27714B6D0068E98C /* UIFont+ATProject.swift */; };
 		45E91043277187F80068E98C /* ATDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 45E91041277187F80068E98C /* ATDataModel.xcdatamodeld */; };
+		45E910692773CD5D0068E98C /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E910682773CD5D0068E98C /* CoreDataManager.swift */; };
+		45E9106B277A2D5E0068E98C /* PlacePhotoImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E9106A277A2D5E0068E98C /* PlacePhotoImageView.swift */; };
+		45E9106D277A41A30068E98C /* UIViewController+ATProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E9106C277A41A30068E98C /* UIViewController+ATProject.swift */; };
+		45E9106F277B8B9A0068E98C /* RestaurantAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E9106E277B8B9A0068E98C /* RestaurantAnnotationView.swift */; };
+		45E91071277E31460068E98C /* UIColor+ATProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E91070277E31460068E98C /* UIColor+ATProject.swift */; };
+		45E91073277E36B20068E98C /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E91072277E36B20068E98C /* Image.swift */; };
+		45E91075277E37FF0068E98C /* UIImage+ATProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E91074277E37FF0068E98C /* UIImage+ATProject.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +51,13 @@
 		45E9102F276C06EA0068E98C /* SearchHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHeaderView.swift; sourceTree = "<group>"; };
 		45E9103F27714B6D0068E98C /* UIFont+ATProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+ATProject.swift"; sourceTree = "<group>"; };
 		45E91042277187F80068E98C /* ATDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ATDataModel.xcdatamodel; sourceTree = "<group>"; };
+		45E910682773CD5D0068E98C /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
+		45E9106A277A2D5E0068E98C /* PlacePhotoImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacePhotoImageView.swift; sourceTree = "<group>"; };
+		45E9106C277A41A30068E98C /* UIViewController+ATProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+ATProject.swift"; sourceTree = "<group>"; };
+		45E9106E277B8B9A0068E98C /* RestaurantAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantAnnotationView.swift; sourceTree = "<group>"; };
+		45E91070277E31460068E98C /* UIColor+ATProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+ATProject.swift"; sourceTree = "<group>"; };
+		45E91072277E36B20068E98C /* Image.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
+		45E91074277E37FF0068E98C /* UIImage+ATProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+ATProject.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +87,7 @@
 				45E91038276FB37B0068E98C /* Views */,
 				45E9103B276FB3A70068E98C /* Models */,
 				45E9103A276FB3950068E98C /* Service Layer */,
+				45E910672773CD4B0068E98C /* Helpers */,
 				45E9103C276FB3DE0068E98C /* Extensions */,
 				45E9100C276ADC250068E98C /* Assets.xcassets */,
 				45E9100E276ADC250068E98C /* LaunchScreen.storyboard */,
@@ -98,7 +113,9 @@
 				45E91019276AEE2A0068E98C /* RestaurantsTableView.swift */,
 				45E9101B276AEEF10068E98C /* RestaurantsMapView.swift */,
 				45E91025276C02D50068E98C /* RestaurantTableViewCell.swift */,
+				45E9106E277B8B9A0068E98C /* RestaurantAnnotationView.swift */,
 				45E9101D276AEFB20068E98C /* RestaurantInfoView.swift */,
+				45E9106A277A2D5E0068E98C /* PlacePhotoImageView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -123,6 +140,7 @@
 		45E9103B276FB3A70068E98C /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				45E91072277E36B20068E98C /* Image.swift */,
 				45E9102B276C06950068E98C /* Restaurants.swift */,
 			);
 			path = Models;
@@ -131,9 +149,20 @@
 		45E9103C276FB3DE0068E98C /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				45E91070277E31460068E98C /* UIColor+ATProject.swift */,
 				45E9103F27714B6D0068E98C /* UIFont+ATProject.swift */,
+				45E91074277E37FF0068E98C /* UIImage+ATProject.swift */,
+				45E9106C277A41A30068E98C /* UIViewController+ATProject.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		45E910672773CD4B0068E98C /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				45E910682773CD5D0068E98C /* CoreDataManager.swift */,
+			);
+			path = Helpers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -208,17 +237,24 @@
 			files = (
 				45E9102A276C05FF0068E98C /* RestaurantsService.swift in Sources */,
 				45E91008276ADC220068E98C /* RestaurantsViewController.swift in Sources */,
+				45E91075277E37FF0068E98C /* UIImage+ATProject.swift in Sources */,
 				45E9104027714B6D0068E98C /* UIFont+ATProject.swift in Sources */,
+				45E910692773CD5D0068E98C /* CoreDataManager.swift in Sources */,
 				45E9101E276AEFB20068E98C /* RestaurantInfoView.swift in Sources */,
 				45E91028276C047B0068E98C /* NetworkManager.swift in Sources */,
 				45E9102C276C06950068E98C /* Restaurants.swift in Sources */,
+				45E9106D277A41A30068E98C /* UIViewController+ATProject.swift in Sources */,
 				45E91030276C06EA0068E98C /* SearchHeaderView.swift in Sources */,
+				45E91073277E36B20068E98C /* Image.swift in Sources */,
 				45E91018276AE89B0068E98C /* RestaurantsViewModel.swift in Sources */,
 				45E91020276AF2B60068E98C /* RestaurantsBaseView.swift in Sources */,
+				45E9106B277A2D5E0068E98C /* PlacePhotoImageView.swift in Sources */,
 				45E91004276ADC220068E98C /* AppDelegate.swift in Sources */,
 				45E91043277187F80068E98C /* ATDataModel.xcdatamodeld in Sources */,
+				45E9106F277B8B9A0068E98C /* RestaurantAnnotationView.swift in Sources */,
 				45E9101A276AEE2A0068E98C /* RestaurantsTableView.swift in Sources */,
 				45E9101C276AEEF10068E98C /* RestaurantsMapView.swift in Sources */,
+				45E91071277E31460068E98C /* UIColor+ATProject.swift in Sources */,
 				45E91026276C02D50068E98C /* RestaurantTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

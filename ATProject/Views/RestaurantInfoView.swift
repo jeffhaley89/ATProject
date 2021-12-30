@@ -15,12 +15,12 @@ enum OpenClosed: String {
     case open = "OPEN"
     case closed = "CLOSED"
     
-    init?(isOpen: Bool) {
+    init(isOpen: Bool) {
         self = isOpen ? .open : .closed
     }
     
     func textColor() -> UIColor {
-        self == .open ? UIColor(red: 0.259, green: 0.541, blue: 0.075, alpha: 1) : .red
+        self == .open ? .allTrailsGreen : .red
     }
 }
 
@@ -33,35 +33,25 @@ enum HeartState {
     }
 
     func image() -> UIImage? {
-        UIImage(named: self == .filled ? "FilledHeart" : "EmptyHeart")
+        UIImage(image: self == .filled ? .filledHeart : .emptyHeart)
     }
 }
 
 class RestaurantInfoView: UIView {
     struct Content {
-        
-//        let geometry: Geometry?
-//        let name: String?
-//        let openingHours: OpeningHours?
-//        let photos: [Photo]?
-//    //    let placeID: String
-//        let priceLevel: Int? // $$$
-//        let rating: Double? // 1 to 5
-//        let userRatingsTotal: Int?
-        
-        
         let name: String?
         let ratingImage: UIImage?
         let totalRatings: String?
         let priceLevel: String?
         let openClosed: OpenClosed?
-        let restaurantImage: UIImage?
+        let restaurantPhotos: [Photo]?
         var heartState: HeartState
         let placeID: String?
         let annotation: MKPointAnnotation?
     }
 
-    let restaurantImageView: UIImageView
+    let containerView: UIView
+    let restaurantImageView: PlacePhotoImageView
     let infoStackView: UIStackView
     let rowOneStackView: UIStackView
     let nameLabel: UILabel
@@ -81,9 +71,15 @@ class RestaurantInfoView: UIView {
         }
     }
 
-    override init(frame: CGRect) {
+    init(viewState: RestaurantViewState) {
+        containerView = {
+            let view = UIView()
+            view.translatesAutoresizingMaskIntoConstraints = false
+            return view
+        }()
+        
         restaurantImageView = {
-            let imageView = UIImageView()
+            let imageView = PlacePhotoImageView()
             imageView.translatesAutoresizingMaskIntoConstraints = false
             return imageView
         }()
@@ -101,7 +97,6 @@ class RestaurantInfoView: UIView {
         rowOneStackView = {
             let stackView = UIStackView()
             stackView.axis = .horizontal
-            stackView.distribution = .fill
             stackView.spacing = 0
             stackView.translatesAutoresizingMaskIntoConstraints = false
             return stackView
@@ -118,7 +113,7 @@ class RestaurantInfoView: UIView {
                 
         favoriteButton = {
             let button = UIButton()
-            button.setImage(UIImage(named: "emptyHeart"), for: .normal)
+            button.setImage(UIImage(image: .emptyHeart), for: .normal)
             button.setContentHuggingPriority(.required, for: .horizontal)
             button.setContentCompressionResistancePriority(.required, for: .horizontal)
             button.imageView?.contentMode = .scaleAspectFit
@@ -129,7 +124,6 @@ class RestaurantInfoView: UIView {
         rowTwoStackView = {
             let stackView = UIStackView()
             stackView.axis = .horizontal
-//            stackView.distribution = .fillProportionally
             stackView.spacing = 8
             stackView.translatesAutoresizingMaskIntoConstraints = false
             return stackView
@@ -153,7 +147,6 @@ class RestaurantInfoView: UIView {
         rowThreeStackView = {
             let stackView = UIStackView()
             stackView.axis = .horizontal
-            stackView.distribution = .fill
             stackView.spacing = 4
             stackView.translatesAutoresizingMaskIntoConstraints = false
             return stackView
@@ -175,13 +168,10 @@ class RestaurantInfoView: UIView {
             return label
         }()
         
-        super.init(frame: frame)
-        backgroundColor = .white
-        layer.borderColor = UIColor(red: 0.91, green: 0.91, blue: 0.91, alpha: 1).cgColor
-        layer.borderWidth = 1
-        layer.cornerRadius = 8
+        super.init(frame: .zero)
         constructSubviewHierarchy()
         constructSubviewConstraints()
+        configureView(with: viewState)
         favoriteButton.addTarget(self, action: #selector(didTapHeartImage), for: .touchUpInside)
     }
     
@@ -190,7 +180,7 @@ class RestaurantInfoView: UIView {
     }
     
     func constructSubviewHierarchy() {
-        addSubview(restaurantImageView)
+        containerView.addSubview(restaurantImageView)
         rowOneStackView.addArrangedSubview(nameLabel)
         rowOneStackView.addArrangedSubview(favoriteButton)
         rowTwoStackView.addArrangedSubview(ratingImageView)
@@ -200,14 +190,15 @@ class RestaurantInfoView: UIView {
         infoStackView.addArrangedSubview(rowOneStackView)
         infoStackView.addArrangedSubview(rowTwoStackView)
         infoStackView.addArrangedSubview(rowThreeStackView)
-        addSubview(infoStackView)
+        containerView.addSubview(infoStackView)
+        addSubview(containerView)
     }
     
     func constructSubviewConstraints() {
         NSLayoutConstraint.activate([
-            restaurantImageView.topAnchor.constraint(equalTo: topAnchor, constant: 16),
-            restaurantImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            restaurantImageView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
+            restaurantImageView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            restaurantImageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            restaurantImageView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
             restaurantImageView.widthAnchor.constraint(equalTo: restaurantImageView.heightAnchor),
             
             rowOneStackView.leadingAnchor.constraint(equalTo: infoStackView.leadingAnchor),
@@ -218,15 +209,36 @@ class RestaurantInfoView: UIView {
 
             ratingImageView.widthAnchor.constraint(equalToConstant: 120),
             
-            infoStackView.topAnchor.constraint(equalTo: topAnchor, constant: 16),
+            infoStackView.topAnchor.constraint(equalTo: containerView.topAnchor),
             infoStackView.leadingAnchor.constraint(equalTo: restaurantImageView.trailingAnchor, constant: 16),
-            infoStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            infoStackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
+            infoStackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            infoStackView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
         ])
     }
     
+    func configureView(with viewState: RestaurantViewState) {
+        switch viewState {
+        case .listView:
+            favoriteButton.isHidden = false
+            backgroundColor = .white
+            layer.borderColor = UIColor.borderGray.cgColor
+            layer.borderWidth = 1
+            layer.cornerRadius = 8
+
+        case .mapView:
+            favoriteButton.isHidden = true
+        }
+        
+        NSLayoutConstraint.activate([
+            containerView.topAnchor.constraint(equalTo: topAnchor, constant: viewState == .listView ? 16 : 6),
+            containerView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: viewState == .listView ? 16 : 6),
+            containerView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: viewState == .listView ? -16 : -6),
+            containerView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: viewState == .listView ? -16 : -6),
+        ])
+    }
+
     func populate(with content: Content) {
-        restaurantImageView.image = content.restaurantImage
+        restaurantImageView.setImage(reference: content.restaurantPhotos?.first?.photoReference)
         nameLabel.text = content.name
         heartState = content.heartState
         ratingImageView.image = content.ratingImage
@@ -241,20 +253,10 @@ class RestaurantInfoView: UIView {
         openClosedLabel.text = state.rawValue
         openClosedLabel.textColor = state.textColor()
     }
-    
-    func toggleViewState(state: RestaurantViewState) {
-        switch state {
-        case .listView:
-            favoriteButton.isHidden = false
 
-        case .mapView:
-            favoriteButton.isHidden = true
-        }
-    }
-    
     @objc
     func didTapHeartImage() {
-        guard let id = placeID else { return } // TODO: modify placeID to non optional?
+        guard let id = placeID else { return }
         heartState.toggle()
         delegate?.didTapHeartImage(isFavorited: heartState == .filled, placeID: id)
     }

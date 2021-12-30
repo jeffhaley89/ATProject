@@ -5,10 +5,11 @@
 //  Created by Jeffrey Haley on 12/16/21.
 //
 
-import Foundation
+import UIKit
 
 protocol RestaurantsService: AnyObject {
     func getOpenRestaurants(with searchString: String?, completion: @escaping (Result<Restaurants, NetworkManagerError>) -> ())
+    func getPlacePhoto(with reference: String, completion: @escaping (Result<UIImage, NetworkManagerError>) -> ())
 }
 
 class DefaultRestaurantsService: RestaurantsService {
@@ -31,6 +32,14 @@ class DefaultRestaurantsService: RestaurantsService {
             completion(result)
         }
     }
+    
+    func getPlacePhoto(with reference: String, completion: @escaping (Result<UIImage, NetworkManagerError>) -> ()) {
+        guard let url = createGetPlacePhotoURL(with: reference) else { return }
+        manager.getImage(url) { result in
+            // TODO: switch on result type to return specific/relevant errors from this layer
+            completion(result)
+        }
+    }
 
     func createGetOpenRestaurantsURL(with query: String?) -> URL? {
         var urlString = "https://maps.googleapis.com/maps/api/place/textsearch/json?key=AIzaSyDue_S6t9ybh_NqaeOJDkr1KC9a2ycUYuE&type=restaurant"
@@ -40,5 +49,9 @@ class DefaultRestaurantsService: RestaurantsService {
         }
 
         return URL(string: urlString)
+    }
+
+    func createGetPlacePhotoURL(with reference: String) -> URL? {
+        URL(string: "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=\(reference)&key=AIzaSyDue_S6t9ybh_NqaeOJDkr1KC9a2ycUYuE")
     }
 }

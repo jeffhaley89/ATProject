@@ -12,14 +12,13 @@ struct Restaurants: Codable {
 }
 
 struct Restaurant: Codable {
-//    let formattedAddress: String
     let geometry: Geometry?
     let name: String?
     let openingHours: OpeningHours?
     let photos: [Photo]?
     let placeID: String?
-    let priceLevel: Int? // $$$
-    let rating: Double? // 1 to 5
+    let priceLevel: Int?
+    let rating: Double?
     let userRatingsTotal: Int?
 
     enum CodingKeys: String, CodingKey {
@@ -52,7 +51,7 @@ struct OpeningHours: Codable {
 }
 
 struct Photo: Codable {
-    let photoReference: String? // use Place Photo API: https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photo_reference&key=YOUR_API_KEY
+    let photoReference: String?
 
     enum CodingKeys: String, CodingKey {
         case photoReference = "photo_reference"

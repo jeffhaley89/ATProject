@@ -16,22 +16,24 @@ class SearchHeaderView: UIView {
     override init(frame: CGRect) {
         logoImageView = {
             let imageView = UIImageView()
-            imageView.image = UIImage(named: "ATHeaderLogo")
+            imageView.image = UIImage(image: .atHeaderLogo)
             imageView.contentMode = .scaleAspectFit
             imageView.translatesAutoresizingMaskIntoConstraints = false
             return imageView
         }()
         
         filterButton = {
-            let button = UIButton()
-            button.contentEdgeInsets = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
-            button.layer.borderColor = UIColor(red: 0.91, green: 0.91, blue: 0.91, alpha: 1).cgColor
+            var configuration = UIButton.Configuration.plain()
+            var container = AttributeContainer()
+            container.font = .aerialMT(12)
+            container.foregroundColor = .gray
+            configuration.attributedTitle = AttributedString("Filter", attributes: container)
+            configuration.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15)
+            
+            let button = UIButton(configuration: configuration, primaryAction: nil)
+            button.layer.borderColor = UIColor.borderGray.cgColor
             button.layer.borderWidth = 1
-            button.layer.cornerRadius = 8
-            button.titleLabel?.font = .aerialMT(12)
-            button.setTitle("Filter", for: .normal)
-            button.setTitleColor(.gray, for: .normal)
-            // TODO: Add shadow
+            button.layer.cornerRadius = 6
             button.setContentHuggingPriority(.required, for: .horizontal)
             button.translatesAutoresizingMaskIntoConstraints = false
             return button
@@ -42,9 +44,13 @@ class SearchHeaderView: UIView {
             textField.attributedPlaceholder = NSAttributedString(
                 string: "Search for a restaurant",
                 attributes: [NSAttributedString.Key.foregroundColor : UIColor.gray])
-            textField.layer.borderColor = UIColor(red: 0.91, green: 0.91, blue: 0.91, alpha: 1).cgColor
+            textField.backgroundColor = .white
+            textField.layer.borderColor = UIColor.borderGray.cgColor
             textField.layer.borderWidth = 1
-            textField.layer.cornerRadius = 8
+            textField.layer.cornerRadius = 6
+            textField.layer.shadowOffset = CGSize(width: 0, height: 1.0)
+            textField.layer.shadowOpacity = 0.1
+            textField.layer.shadowRadius = 1.0
             textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
             textField.leftViewMode = .always
             textField.font = .aerialRoundedMTBold(14)

@@ -28,6 +28,7 @@ class RestaurantsViewController: UIViewController {
         view.tableView.delegate = self
         view.tableView.register(RestaurantTableViewCell.self, forCellReuseIdentifier: "RestaurantTableViewCell")
         view.mapView.delegate = self
+        view.mapView.register(RestaurantAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier)
         view.searchHeaderView.searchBarTextField.delegate = self
         self.view = view
     }
@@ -48,8 +49,7 @@ class RestaurantsViewController: UIViewController {
             getRestaurantsViewContent(with: nil)
 
         case .denied, .restricted:
-            print("")
-            // TODO: show alert to turn on location in settings
+            displayLocationAlert()
             
         @unknown default:
             return
@@ -69,7 +69,7 @@ class RestaurantsViewController: UIViewController {
                 switch result {
                 case .success:
                     self.rootView.tableView.reloadData()
-                    self.rootView.mapView.populate(with: self.viewModel.mapViewContent)
+                    self.rootView.mapView.populate(with: self.viewModel.infoViewsContent)
 
                 case let .failure(error):
                     // TODO: display error message accordingly
@@ -83,14 +83,13 @@ class RestaurantsViewController: UIViewController {
 extension RestaurantsViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-//        let selectedRestaurant = viewModel.restaurantsViewContent.cellContent[indexPath.row]
-//        guard let annotation = selectedRestaurant.annotation else { return }
-//        mapView.mapView.selectAnnotation(annotation, animated: true)
-//        didTapMapButton()
+        guard let selectedRestaurantAnnotation = viewModel.infoViewsContent[indexPath.row].annotation else { return }
+        rootView.mapView.selectAnnotation(selectedRestaurantAnnotation, animated: true)
+        rootView.viewState = .mapView
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.listViewContent.cellsContent.count
+        viewModel.infoViewsContent.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -98,7 +97,7 @@ extension RestaurantsViewController: UITableViewDataSource, UITableViewDelegate 
             return UITableViewCell()
         }
 
-        cell.restaurantInfoView.populate(with: viewModel.listViewContent.cellsContent[indexPath.row])
+        cell.restaurantInfoView.populate(with: viewModel.infoViewsContent[indexPath.row])
         cell.restaurantInfoView.delegate = self
         return cell
     }
@@ -114,7 +113,6 @@ extension RestaurantsViewController: UITextFieldDelegate {
 
 extension RestaurantsViewController: RestaurantInfoViewDelegate {
     func didTapHeartImage(isFavorited: Bool, placeID: String) {
-        // TODO: extract if else into viewModel?
         if isFavorited {
             viewModel.saveFavoritedRestaurant(id: placeID)
         } else {
@@ -124,11 +122,23 @@ extension RestaurantsViewController: RestaurantInfoViewDelegate {
 }
 
 extension RestaurantsViewController: MKMapViewDelegate {
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        guard let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier) as? RestaurantAnnotationView,
+              let content = viewModel.getSelectedRestaurantContent(with: annotation.coordinate)
+        else {
+            return MKAnnotationView()
+        }
+
+        annotationView.restaurantInfoView.populate(with: content)
+        return annotationView
+    }
+    
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-//        guard let coordinate = view.annotation?.coordinate,
-//              let content = viewModel.getSelectedRestaurantContent(with: coordinate) else { return }
-//        self.mapView.selectedRestaurantInfoView.populate(with: content)
-//        self.mapView.selectedRestaurantInfoView.isHidden = false
+        view.image = UIImage(image: .mapPinGreen)
+    }
+    
+    func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
+        view.image = UIImage(image: .mapPinGray)
     }
 }
 

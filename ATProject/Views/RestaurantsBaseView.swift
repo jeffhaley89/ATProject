@@ -16,10 +16,6 @@ enum RestaurantViewState {
     }
 }
 
-//protocol RestaurantsContainerViewDelegate: AnyObject {
-//    func didTapMapListButton()
-//}
-
 class RestaurantsBaseView: UIView {
     
     let searchHeaderView: SearchHeaderView
@@ -27,15 +23,14 @@ class RestaurantsBaseView: UIView {
     let containerView: UIView
     let tableView: RestaurantsTableView
     let mapView: RestaurantsMapView
-//    weak var delegate: RestaurantsContainerViewDelegate?
     var viewState = RestaurantViewState.listView {
         didSet {
             didSetViewState(state: viewState)
         }
     }
     
-    let listToggleImage = UIImage(named: "ListToggle")
-    let mapToggleImage = UIImage(named: "MapToggle")
+    let listToggleImage = UIImage(image: .listToggle)
+    let mapToggleImage = UIImage(image: .mapToggle)
     
     override init(frame: CGRect) {
         containerView = {
@@ -46,7 +41,8 @@ class RestaurantsBaseView: UIView {
         
         mapListButton = {
             let button = UIButton()
-            button.backgroundColor = UIColor(red: 0.259, green: 0.541, blue: 0.075, alpha: 1)
+            button.backgroundColor = .allTrailsGreen
+            button.clipsToBounds = true
             button.layer.cornerRadius = 8
             button.translatesAutoresizingMaskIntoConstraints = false
             return button
@@ -127,6 +123,5 @@ class RestaurantsBaseView: UIView {
     @objc
     func didTapMapListButton() {
         viewState.toggle()
-//        delegate?.didTapMapListButton()
     }
 }

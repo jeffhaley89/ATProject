@@ -12,7 +12,7 @@ class RestaurantTableViewCell: UITableViewCell {
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         restaurantInfoView = {
-            let view = RestaurantInfoView()
+            let view = RestaurantInfoView(viewState: .listView)
             view.translatesAutoresizingMaskIntoConstraints = false
             return view
         }()
